@@ -11,36 +11,35 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      uses: docker/setup-buildx-action@v3
 
     - name: Log in to Docker Hub
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@v4
+      uses: docker/build-push-action@v6
       with:
         context: .
         push: true
         tags: d4c4n/emil-emoji:latest
         platforms: linux/arm/v7,linux/arm64,linux/amd64
 
-    - name: Deploy to Ubuntu Server
+    - name: Deploy to Server
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.RPI_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }} "
-          cd /root/EmilEmoji &&
-          git pull origin main &&
-          docker build -t d4c4n/emil-emoji:latest . &&
+          docker pull d4c4n/emil-emoji:latest &&
           docker stop emil-emoji || true &&
           docker rm emil-emoji || true &&
-          docker run -d --name emil-emoji -p 3000:3000 --restart unless-stopped d4c4n/emil-emoji:latest
+          docker run -d --name emil-emoji -p 3000:3000 --restart unless-stopped d4c4n/emil-emoji:latest &&
+          docker image prune -f
         "
       

@@ -1,5 +1,5 @@
 # Base image for Node.js (Raspberry Pi compatible)
-FROM node:lts
+FROM node:20
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
