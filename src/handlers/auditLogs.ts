@@ -10,7 +10,7 @@ export interface AuditLogEventHandlerProps {
   /**
    * The audit log entry that was created.
    */
-  auditLog: GuildAuditLogsEntry<AuditLogEvent, GuildAuditLogsActionType, GuildAuditLogsTargetType, AuditLogEvent>;
+  auditLog: GuildAuditLogsEntry<AuditLogEvent, GuildAuditLogsActionType, GuildAuditLogsTargetType>;
 }
 
 /**
@@ -35,8 +35,8 @@ export const onAuditLogEntryCreate = (auditLogProps: AuditLogEventHandlerProps) 
 export const onSoundboardSoundAuditLogEntryCreate = (auditLogProps: AuditLogEventHandlerProps) => {
   const { client, auditLog } = auditLogProps;
 
-  const soundName = auditLog.changes.find(change => change.key === "name")?.new;
-  const soundId = auditLog.changes.find(change => change.key === "sound_id")?.new;
+  const soundName = auditLog.changes.find((change: { key: string; new?: unknown }) => change.key === "name")?.new;
+  const soundId = auditLog.changes.find((change: { key: string; new?: unknown }) => change.key === "sound_id")?.new;
 
   if (!soundId || !soundName) {
     console.log("sound_id or sound_name not found while creating soundboard sound notification.");
